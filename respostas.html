@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ChatGPT - Assistente de IA</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a1a1a;
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      max-width: 600px;
+      text-align: center;
+    }
+
+    .chat-container {
+      background-color: #262626;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      text-align: left;
+    }
+
+    .user-message {
+      color: #4CAF50;
+    }
+
+    .assistant-message {
+      color: #fff;
+    }
+
+    .input-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    input[type="text"] {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 4px;
+      width: 400px;
+      margin-right: 10px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    function sendMessage() {
+      var userMessage = document.getElementById("user-message").value;
+      var chatContainer = document.getElementById("chat-container");
+
+      // Exibe a mensagem do usuário no chat
+      var userMessageElement = document.createElement("p");
+      userMessageElement.classList.add("user-message");
+      userMessageElement.textContent = "Usuário: " + userMessage;
+      chatContainer.appendChild(userMessageElement);
+
+      // Chama a função de resposta do assistente de IA
+      getAssistantResponse(userMessage);
+    }
+
+    async function getAssistantResponse(userMessage) {
+      var chatContainer = document.getElementById("chat-container");
+
+      // Exibe uma mensagem de digitação do assistente de IA
+      var typingMessageElement = document.createElement("p");
+      typingMessageElement.classList.add("assistant-message");
+      typingMessageElement.textContent = "Assistente de IA está digitando...";
+      chatContainer.appendChild(typingMessageElement);
+
+      try {
+        // Realiza uma solicitação para obter a resposta do assistente de IA
+        var response = await fetch("/your-assistant-api-endpoint", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: userMessage
+          })
+        });
+        var data = await response.json();
+
+        // Remove a mensagem de digitação do assistente
+        typingMessageElement.remove();
+
+        // Exibe a resposta do assistente de IA no chat
+        var assistantMessageElement = document.createElement("p");
+        assistantMessageElement.classList.add("assistant-message");
+        assistantMessageElement.textContent = "Assistente de IA: " + data.message;
+        chatContainer.appendChild(assistantMessageElement);
+      } catch (error) {
+        console.log(error);
+        typingMessageElement.textContent = "Ocorreu um erro ao obter a resposta.";
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h2>ChatGPT - Assistente de IA</h2>
+    <div class="chat-container" id="chat-container"></div>
+    <div class="input-container">
+      <input type="text" id="user-message" placeholder="Digite sua mensagem">
+      <button onclick="sendMessage()">Enviar</button>
+    </div>
+  </div>
+</body>
+</html>
